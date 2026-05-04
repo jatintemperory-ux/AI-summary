@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Summary Tool — Instant Document Summaries</title>
+    <meta name="description" content="Upload any PDF, DOCX, or TXT file and get AI-powered key points and summaries in seconds. Free, fast, and private.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+    <!-- Animated background orbs -->
+    <div class="bg-orbs" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- ============ HEADER ============ -->
+        <header class="header" id="header">
+            <div class="logo-row">
+                <div class="logo-icon">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                        <rect width="36" height="36" rx="10" fill="url(#logoGrad)"/>
+                        <path d="M10 12h16M10 18h12M10 24h8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="36" y2="36">
+                                <stop stop-color="#a855f7"/>
+                                <stop offset="1" stop-color="#06b6d4"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1 class="logo-text">AI Summary Tool</h1>
+            </div>
+            <p class="tagline">Upload a document. Get key insights instantly.</p>
+        </header>
+
+        <!-- ============ UPLOAD SECTION ============ -->
+        <section class="upload-section" id="upload-section">
+            <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload a document">
+                <div class="dropzone-icon">
+                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                        <circle cx="28" cy="28" r="27" stroke="url(#dzGrad)" stroke-width="2" stroke-dasharray="6 4"/>
+                        <path d="M28 18v16M20 26l8-8 8 8" stroke="url(#dzGrad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M18 36h20" stroke="url(#dzGrad)" stroke-width="2.2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="dzGrad" x1="0" y1="0" x2="56" y2="56">
+                                <stop stop-color="#a855f7"/>
+                                <stop offset="1" stop-color="#06b6d4"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <p class="dropzone-text">Drag & drop your file here</p>
+                <p class="dropzone-subtext">or click to browse</p>
+                <div class="file-badges">
+                    <span class="badge">PDF</span>
+                    <span class="badge">DOCX</span>
+                    <span class="badge">TXT</span>
+                </div>
+                <input type="file" id="file-input" accept=".txt,.pdf,.docx" hidden>
+            </div>
+
+            <!-- Selected file indicator -->
+            <div class="selected-file" id="selected-file" hidden>
+                <div class="file-info">
+                    <svg class="file-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M4 2h8l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V2z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M12 2v4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span id="file-name" class="file-name-text"></span>
+                    <span id="file-size" class="file-size-text"></span>
+                </div>
+                <button class="remove-file-btn" id="remove-file" aria-label="Remove file">✕</button>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-row" id="controls-row">
+                <div class="control-group">
+                    <label for="main-points-slider">Key Points</label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="main-points-slider" min="1" max="10" value="3">
+                        <span class="slider-value" id="main-points-value">3</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="summary-slider">Summary Sentences</label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="summary-slider" min="1" max="10" value="5">
+                        <span class="slider-value" id="summary-value">5</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="summarize-btn" id="summarize-btn" disabled>
+                <span class="btn-text">Summarize Document</span>
+                <span class="btn-loader is-hidden">
+                    <span class="spinner"></span>
+                    Processing…
+                </span>
+            </button>
+        </section>
+
+        <!-- ============ RESULTS SECTION ============ -->
+        <section class="results-section" id="results-section" hidden>
+            <div class="results-header">
+                <h2 class="results-title">Results</h2>
+                <div class="file-stats" id="file-stats"></div>
+            </div>
+
+            <div class="results-grid">
+                <!-- Main Points Card -->
+                <div class="result-card" id="main-points-card">
+                    <div class="card-header">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                            <circle cx="11" cy="11" r="10" stroke="url(#cpGrad)" stroke-width="1.5"/>
+                            <path d="M7 11l3 3 5-5" stroke="url(#cpGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <defs>
+                                <linearGradient id="cpGrad" x1="0" y1="0" x2="22" y2="22">
+                                    <stop stop-color="#a855f7"/>
+                                    <stop offset="1" stop-color="#06b6d4"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <h3>Key Points</h3>
+                    </div>
+                    <ul class="points-list" id="points-list"></ul>
+                </div>
+
+                <!-- Summary Card -->
+                <div class="result-card" id="summary-card">
+                    <div class="card-header">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                            <rect x="1" y="1" width="20" height="20" rx="5" stroke="url(#csGrad)" stroke-width="1.5"/>
+                            <path d="M6 8h10M6 12h8M6 16h5" stroke="url(#csGrad)" stroke-width="1.5" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="csGrad" x1="0" y1="0" x2="22" y2="22">
+                                    <stop stop-color="#a855f7"/>
+                                    <stop offset="1" stop-color="#06b6d4"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <h3>Summary</h3>
+                    </div>
+                    <p class="summary-text" id="summary-text"></p>
+                </div>
+            </div>
+
+            <button class="new-file-btn" id="new-file-btn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Summarize Another File
+            </button>
+        </section>
+
+        <!-- ============ ERROR TOAST ============ -->
+        <div class="toast" id="error-toast" role="alert" hidden>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="8" stroke="#f87171" stroke-width="1.5"/>
+                <path d="M9 5v5M9 12.5v.5" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <span id="toast-message"></span>
+        </div>
+
+        <!-- ============ FOOTER ============ -->
+        <footer class="footer">
+            <p>Powered by <strong>NLTK</strong> & <strong>sumy</strong> · 100% local & private</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
